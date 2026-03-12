@@ -85,9 +85,13 @@ col1, col2, _ = st.columns([1, 1, 4])
 with col1:
     if st.button("Select all visible"):
         st.session_state.selected_ids |= set(filtered["question_id"])
+        for qid in filtered["question_id"]:
+            st.session_state[f"cb_{qid}"] = True
         st.rerun()
 with col2:
     if st.button("Clear selection"):
+        for qid in st.session_state.selected_ids:
+            st.session_state[f"cb_{qid}"] = False
         st.session_state.selected_ids.clear()
         st.rerun()
 
