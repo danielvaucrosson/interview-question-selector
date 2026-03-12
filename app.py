@@ -170,12 +170,12 @@ else:
     export_df["difficulty"] = export_df["difficulty"].map(DIFF_LABELS)
 
     buf = BytesIO()
-    with pd.ExcelWriter(buf, engine="xlsxwriter") as writer:
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         export_df.to_excel(writer, index=False, sheet_name="Interview Questions")
         ws = writer.sheets["Interview Questions"]
-        ws.set_column("B:B", 60)
-        ws.set_column("C:C", 80)
-        ws.set_column("D:D", 20)
+        ws.column_dimensions["B"].width = 60
+        ws.column_dimensions["C"].width = 80
+        ws.column_dimensions["D"].width = 20
     buf.seek(0)
 
     st.download_button(
