@@ -34,18 +34,28 @@ df = load_questions()
 # --- Sidebar filters ---
 st.sidebar.header("Filters")
 
+if st.sidebar.button("Clear all filters"):
+    st.session_state["filter_domain"] = []
+    st.session_state["filter_subdomain"] = []
+    st.session_state["filter_tech"] = []
+    for level in DIFF_LABELS:
+        st.session_state[f"diff_{level}"] = True
+    st.session_state["filter_type"] = sorted(df["question_type"].dropna().unique())
+    st.session_state["filter_max_q"] = 15
+    st.rerun()
+
 all_domains = sorted(df["domain"].dropna().unique())
-sel_domains = st.sidebar.multiselect("Domain", all_domains)
+sel_domains = st.sidebar.multiselect("Domain", all_domains, key="filter_domain")
 
 if sel_domains:
     sub_opts = sorted(df[df["domain"].isin(sel_domains)]["sub_domain"].dropna().unique())
 else:
     sub_opts = sorted(df["sub_domain"].dropna().unique())
-sel_subdomains = st.sidebar.multiselect("Sub-domain", sub_opts)
+sel_subdomains = st.sidebar.multiselect("Sub-domain", sub_opts, key="filter_subdomain")
 
 all_techs = sorted({t for techs in df["tech_list"] for t in techs if t})
 tech_display = [f"{t} — {TECH_LABELS.get(t, t)}" for t in all_techs]
-sel_tech_display = st.sidebar.multiselect("Technology", tech_display)
+sel_tech_display = st.sidebar.multiselect("Technology", tech_display, key="filter_tech")
 sel_techs = [t.split(" — ")[0] for t in sel_tech_display]
 
 sel_diffs = []
@@ -55,9 +65,9 @@ for level, label in DIFF_LABELS.items():
         sel_diffs.append(level)
 
 all_types = sorted(df["question_type"].dropna().unique())
-sel_types = st.sidebar.multiselect("Question type", all_types, default=all_types)
+sel_types = st.sidebar.multiselect("Question type", all_types, default=all_types, key="filter_type")
 
-max_q = st.sidebar.slider("Max questions", 5, 50, 15)
+max_q = st.sidebar.slider("Max questions", 5, 50, 15, key="filter_max_q")
 
 # --- Apply filters ---
 mask = pd.Series(True, index=df.index)
