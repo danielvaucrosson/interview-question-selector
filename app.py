@@ -34,7 +34,7 @@ df = load_questions()
 # --- Sidebar filters ---
 st.sidebar.header("Filters")
 
-if st.sidebar.button("Clear all filters"):
+if st.sidebar.button("Reset Filters"):
     st.session_state["filter_domain"] = []
     st.session_state["filter_subdomain"] = []
     st.session_state["filter_tech"] = []
