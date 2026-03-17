@@ -9,9 +9,10 @@ st.title("Interview Metadata")
 st.caption("Fill in candidate and interview details. Fields marked with * are required.")
 
 # ---------------------------------------------------------------------------
-# Session-state defaults
+# Persistent storage keys — these survive page navigation.
+# Widget keys are ephemeral; we copy TO them on load and FROM them on save.
 # ---------------------------------------------------------------------------
-_defaults = {
+_FIELDS = {
     "meta_candidate": "",
     "meta_date": date.today(),
     "meta_interviewer": "",
@@ -21,38 +22,86 @@ _defaults = {
     "meta_duration": "60 min",
 }
 
-for key, value in _defaults.items():
+# Ensure persistent keys exist
+for key, default in _FIELDS.items():
     if key not in st.session_state:
-        st.session_state[key] = value
+        st.session_state[key] = default
 
 # ---------------------------------------------------------------------------
-# Two-column layout
+# Form — groups all inputs, only writes on submit
 # ---------------------------------------------------------------------------
-left, right = st.columns(2)
+with st.form("metadata_form"):
+    left, right = st.columns(2)
 
-with left:
-    st.text_input("Candidate Name *", key="meta_candidate")
-    st.date_input("Interview Date *", key="meta_date")
-    st.text_input("Interviewer Name *", key="meta_interviewer")
+    with left:
+        candidate = st.text_input(
+            "Candidate Name *", value=st.session_state.meta_candidate
+        )
+        interview_date = st.date_input(
+            "Interview Date *", value=st.session_state.meta_date
+        )
+        interviewer = st.text_input(
+            "Interviewer Name *", value=st.session_state.meta_interviewer
+        )
 
-with right:
-    st.text_input("Job Title / Role *", key="meta_job_title")
-    st.text_input("Company / Business Unit", key="meta_company")
-    st.selectbox("Seniority Level", SENIORITY_LEVELS, key="meta_seniority")
-    st.text_input("Estimated Duration", key="meta_duration")
+    with right:
+        job_title = st.text_input(
+            "Job Title / Role *", value=st.session_state.meta_job_title
+        )
+        company = st.text_input(
+            "Company / Business Unit", value=st.session_state.meta_company
+        )
+        seniority_idx = (
+            SENIORITY_LEVELS.index(st.session_state.meta_seniority)
+            if st.session_state.meta_seniority in SENIORITY_LEVELS
+            else 1
+        )
+        seniority = st.selectbox(
+            "Seniority Level", SENIORITY_LEVELS, index=seniority_idx
+        )
+        duration = st.text_input(
+            "Estimated Duration", value=st.session_state.meta_duration
+        )
+
+    submitted = st.form_submit_button("Save & Continue", type="primary")
+
+if submitted:
+    # Persist all values to session state
+    st.session_state.meta_candidate = candidate
+    st.session_state.meta_date = interview_date
+    st.session_state.meta_interviewer = interviewer
+    st.session_state.meta_job_title = job_title
+    st.session_state.meta_company = company
+    st.session_state.meta_seniority = seniority
+    st.session_state.meta_duration = duration
+
+    # Validate required fields
+    missing = []
+    if not candidate.strip():
+        missing.append("Candidate Name")
+    if not interviewer.strip():
+        missing.append("Interviewer Name")
+    if not job_title.strip():
+        missing.append("Job Title / Role")
+
+    if missing:
+        st.warning(f"Missing required fields: {', '.join(missing)}")
+    else:
+        st.success("Metadata saved! Navigating to Questions...")
+        st.switch_page("pages/2_Questions.py")
 
 # ---------------------------------------------------------------------------
-# Validation
+# Show current status (non-form area)
 # ---------------------------------------------------------------------------
-required = {
+st.divider()
+required_check = {
     "Candidate Name": st.session_state.meta_candidate,
     "Interviewer Name": st.session_state.meta_interviewer,
     "Job Title / Role": st.session_state.meta_job_title,
 }
+missing_now = [name for name, val in required_check.items() if not str(val).strip()]
 
-missing = [name for name, val in required.items() if not val.strip()]
-
-if missing:
-    st.warning(f"Missing required fields: {', '.join(missing)}")
+if missing_now:
+    st.info(f"Required fields still needed: {', '.join(missing_now)}")
 else:
-    st.success("All required fields are complete.")
+    st.success("All required fields are saved.")
