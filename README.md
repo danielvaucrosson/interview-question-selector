@@ -68,6 +68,7 @@ A `.devcontainer` configuration is included for VS Code / GitHub Codespaces. Ope
 │   ├── 4_Review.py            # Step 4: Document preview
 │   └── 5_Generate.py          # Step 5: Validation, generation & download
 ├── lib/
+│   ├── data.py                # Question bank loader & shared constants
 │   └── docx_engine.py         # Word document generation engine
 ├── question-bank.xlsx         # Interview question data source
 ├── requirements.txt           # Python dependencies

@@ -99,9 +99,13 @@ if can_generate:
                 "meta_candidate", "meta_date", "meta_interviewer",
                 "meta_job_title", "meta_company", "meta_seniority",
                 "meta_duration", "selected_ids", "sections",
-                "review_complete",
+                "review_complete", "custom_q_counter",
             ]:
                 st.session_state.pop(key, None)
+            # Clear all checkbox keys (chk_*)
+            chk_keys = [k for k in st.session_state if k.startswith("chk_")]
+            for k in chk_keys:
+                del st.session_state[k]
             st.rerun()
 else:
     st.info("Resolve the errors above before generating the document.")

@@ -234,11 +234,11 @@ def _make_meta_table(doc, q):
 
     # Data row
     data_cells = [
-        (q.get("id", ""), 10, True, None),
-        (q.get("subdomain", ""), 9, False, None),
-        (q.get("technology", "General"), 9, False, None),
+        (q.get("id") or "", 10, True, None),
+        (q.get("subdomain") or "", 9, False, None),
+        (q.get("technology") or "General", 9, False, None),
         (f"{diff_val} - {diff_label}", 9, True, diff_color),
-        (q.get("question_type", ""), 9, False, None),
+        (q.get("question_type") or "", 9, False, None),
     ]
     for i, (text, size, bold, color) in enumerate(data_cells):
         cell = table.rows[1].cells[i]
@@ -374,7 +374,7 @@ def _build_question_block(doc, q):
     q_p.paragraph_format.space_before = Pt(4)
     q_p.paragraph_format.space_after = Pt(4)
     _add_run(q_p, "Q: ", size_pt=11, bold=True, color=MED_BLUE)
-    _add_run(q_p, q.get("question", ""), size_pt=11)
+    _add_run(q_p, q.get("question") or "", size_pt=11)
 
     # Ideal Answer Components header
     ans_header = doc.add_paragraph()
@@ -384,7 +384,7 @@ def _build_question_block(doc, q):
     _add_run(ans_header, "  Ideal Answer Components:", size_pt=10, bold=True, color=DARK_BLUE)
 
     # Answer bullets
-    answer_text = q.get("answer", "")
+    answer_text = q.get("answer") or ""
     bullets = [b.strip() for b in answer_text.split("\n") if b.strip()]
     for bullet in bullets:
         bp = doc.add_paragraph()

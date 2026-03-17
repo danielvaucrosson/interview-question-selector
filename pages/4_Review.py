@@ -127,4 +127,4 @@ for sec in sections:
 st.markdown("---")
 if st.button("Looks good — proceed to generate", type="primary"):
     st.session_state.review_complete = True
-    st.success("Review complete! You can now proceed to generate the interview document.")
+    st.switch_page("pages/5_Generate.py")

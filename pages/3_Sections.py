@@ -29,13 +29,13 @@ question_lookup: dict = {}
 for _, row in selected_df.iterrows():
     question_lookup[row["question_id"]] = {
         "id": row["question_id"],
-        "question": str(row["question"]),
-        "answer": str(row.get("answer", "")),
-        "domain": str(row.get("domain", "")),
-        "subdomain": str(row.get("sub_domain", "")),
-        "technology": str(row.get("technology", "")) or "\u2014",
+        "question": str(row.get("question") or ""),
+        "answer": str(row.get("answer") or ""),
+        "domain": str(row.get("domain") or ""),
+        "subdomain": str(row.get("sub_domain") or ""),
+        "technology": str(row.get("technology") or "") or "\u2014",
         "difficulty": int(row["difficulty"]) if row.get("difficulty") is not None else 1,
-        "question_type": str(row.get("question_type", "")),
+        "question_type": str(row.get("question_type") or ""),
     }
 
 # ---------------------------------------------------------------------------
