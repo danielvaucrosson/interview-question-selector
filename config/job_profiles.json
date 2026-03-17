@@ -1,0 +1,22 @@
+{
+  "BI & Analytics Consultant — Qlik/PBI": {
+    "domains": ["Data Visualization", "Data Analysis"],
+    "technologies": ["QLK", "PBI", "SQL"],
+    "difficulty_weights": {"Junior": [1, 1, 2], "Mid": [1, 2, 2], "Senior": [2, 2, 3], "Expert/Technical Lead": [2, 3, 3]}
+  },
+  "Data Engineer — Snowflake/dbt": {
+    "domains": ["Data Engineering", "Data Warehousing"],
+    "technologies": ["SNO", "DBT", "SQL", "PY"],
+    "difficulty_weights": {"Junior": [1, 1, 2], "Mid": [1, 2, 2], "Senior": [2, 2, 3], "Expert/Technical Lead": [2, 3, 3]}
+  },
+  "Cloud Data Architect": {
+    "domains": ["Data Architecture", "Cloud & Infrastructure", "Data Engineering"],
+    "technologies": ["AWS", "AZR", "GCP", "SNO", "DBR", "TFM"],
+    "difficulty_weights": {"Junior": [1, 1, 2], "Mid": [1, 2, 2], "Senior": [2, 2, 3], "Expert/Technical Lead": [2, 3, 3]}
+  },
+  "Data Scientist — Python/ML": {
+    "domains": ["Data Science", "AI / ML Engineering", "Data Analysis"],
+    "technologies": ["PY", "SPK", "SQL"],
+    "difficulty_weights": {"Junior": [1, 1, 2], "Mid": [1, 2, 2], "Senior": [2, 2, 3], "Expert/Technical Lead": [2, 3, 3]}
+  }
+}
