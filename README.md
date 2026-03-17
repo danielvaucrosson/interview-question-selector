@@ -2,6 +2,8 @@
 
 A Streamlit-based web application for filtering, selecting, and exporting interview questions from a curated question bank. Designed for interviewers preparing technical assessments across data and analytics domains.
 
+**Live app:** [interview-question-selector.streamlit.app](https://interview-question-selector-ftivfsozkvakxgd9dl2rzk.streamlit.app/)
+
 ## Features
 
 - **Multi-dimensional filtering** — Filter by domain, sub-domain, technology, difficulty level, and question type
