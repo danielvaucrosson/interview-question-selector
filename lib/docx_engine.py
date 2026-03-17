@@ -40,6 +40,45 @@ DEFAULT_ASSESSMENT_DIMENSIONS = [
     "Pre-Sales / POC Capability",
 ]
 
+DEFAULT_EVAL_DIMENSIONS = [
+    {
+        "label": "Tech Skills",
+        "prompt": "What are the main technical strengths you observed in the candidate during the interview?",
+        "has_rating": True,
+    },
+    {
+        "label": "Consulting Skills",
+        "prompt": (
+            "How would you rate the candidate\u2019s consulting skills, particularly in their"
+            " capacity to comprehend client requirements and deliver impactful solutions? Why?"
+        ),
+        "has_rating": True,
+    },
+    {
+        "label": "Seniority",
+        "prompt": "Does the candidate possess the appropriate seniority for the role, in your assessment?",
+        "has_rating": True,
+    },
+    {
+        "label": "Communication",
+        "prompt": "How would you describe the candidate\u2019s communication style during the interview?",
+        "has_rating": True,
+    },
+    {
+        "label": "Cultural Fit",
+        "prompt": (
+            "In your opinion, does the candidate demonstrate a good cultural fit with the team"
+            " and the organization? Why?"
+        ),
+        "has_rating": True,
+    },
+    {
+        "label": "Weaknesses / Areas for Improvement",
+        "prompt": "Please share your insights into the candidate\u2019s identified weaknesses or areas for improvement.",
+        "has_rating": False,
+    },
+]
+
 
 # ---------------------------------------------------------------------------
 # Low-level helpers
@@ -515,6 +554,166 @@ def _build_assessment_page(doc, dimensions=None):
     _make_notes_box(doc, height_twips=2400)
 
 
+def _build_eval_dimension(doc, dim):
+    """Build a single evaluation dimension block (header bar, prompt, optional rating, notes)."""
+    # Light-blue header bar with dimension label
+    hdr = doc.add_paragraph()
+    hdr.paragraph_format.space_before = Pt(10)
+    hdr.paragraph_format.space_after = Pt(4)
+    _add_paragraph_shading(hdr, LIGHT_BLUE)
+    _add_run(hdr, f"  {dim['label']}", size_pt=10, bold=True, color=DARK_BLUE)
+
+    # Prompt text
+    prompt_p = doc.add_paragraph()
+    prompt_p.paragraph_format.space_before = Pt(2)
+    prompt_p.paragraph_format.space_after = Pt(4)
+    _add_run(prompt_p, dim["prompt"], size_pt=10)
+
+    # Rating row (if applicable)
+    if dim.get("has_rating", False):
+        rating_lbl = doc.add_paragraph()
+        rating_lbl.paragraph_format.space_before = Pt(2)
+        rating_lbl.paragraph_format.space_after = Pt(2)
+        _make_rating_row(doc)
+
+    # Notes label + notes box
+    notes_lbl = doc.add_paragraph()
+    notes_lbl.paragraph_format.space_before = Pt(4)
+    notes_lbl.paragraph_format.space_after = Pt(2)
+    _add_run(notes_lbl, "Notes:", size_pt=10, bold=True)
+
+    _make_notes_box(doc, height_twips=700)
+
+
+def _build_ats_evaluation_page(doc, eval_dimensions=None):
+    """Build the ATS Evaluation page (Page 1 of the evaluation section)."""
+    if eval_dimensions is None:
+        eval_dimensions = DEFAULT_EVAL_DIMENSIONS
+
+    doc.add_page_break()
+
+    # Dark blue header bar
+    header_p = doc.add_paragraph()
+    header_p.paragraph_format.space_after = Pt(4)
+    _add_paragraph_shading(header_p, DARK_BLUE)
+    _add_run(
+        header_p,
+        "  ATS EVALUATION \u2014 Technical Interview | General Template",
+        size_pt=12,
+        bold=True,
+        color="FFFFFF",
+    )
+
+    # Subtitle
+    sub_p = doc.add_paragraph()
+    sub_p.paragraph_format.space_after = Pt(10)
+    _add_run(
+        sub_p,
+        "Complete this section after the interview and transfer responses to your ATS.",
+        size_pt=9.5,
+        italic=True,
+    )
+
+    # Evaluation dimensions
+    for dim in eval_dimensions:
+        _build_eval_dimension(doc, dim)
+
+
+def _build_internal_only_page(doc):
+    """Build the Internal Only page (Page 2 of the evaluation section)."""
+    doc.add_page_break()
+
+    # Red header bar
+    header_p = doc.add_paragraph()
+    header_p.paragraph_format.space_after = Pt(10)
+    _add_paragraph_shading(header_p, "C00000")
+    _add_run(header_p, "  INTERNAL ONLY", size_pt=12, bold=True, color="FFFFFF")
+
+    # --- Seniority Classification ---
+    sen_hdr = doc.add_paragraph()
+    sen_hdr.paragraph_format.space_before = Pt(10)
+    sen_hdr.paragraph_format.space_after = Pt(4)
+    _add_paragraph_shading(sen_hdr, LIGHT_BLUE)
+    _add_run(sen_hdr, "  [Internal] Seniority Classification", size_pt=10, bold=True, color=DARK_BLUE)
+
+    sen_prompt = doc.add_paragraph()
+    sen_prompt.paragraph_format.space_before = Pt(2)
+    sen_prompt.paragraph_format.space_after = Pt(4)
+    _add_run(
+        sen_prompt,
+        "Based on the candidate\u2019s experience and responses, how would you classify their seniority level?",
+        size_pt=10,
+    )
+
+    # Options row
+    sen_table = doc.add_table(rows=1, cols=2)
+    sen_table.alignment = WD_TABLE_ALIGNMENT.LEFT
+    opt_cell = sen_table.rows[0].cells[0]
+    opt_cell.paragraphs[0].clear()
+    _add_run(
+        opt_cell.paragraphs[0],
+        "Junior  /  Mid  /  Semi Senior  /  Senior  /  Expert/Technical Lead  /  Manager/Director",
+        size_pt=10,
+    )
+    _set_cell_no_borders(opt_cell)
+    _set_cell_margins(opt_cell, top=60, bottom=60, left=0, right=120)
+
+    inp_cell = sen_table.rows[0].cells[1]
+    inp_cell.paragraphs[0].clear()
+    inp_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _add_run(inp_cell.paragraphs[0], "", size_pt=10)
+    _set_cell_borders(inp_cell, color="999999")
+    _set_cell_shading(inp_cell, "FAFAFA")
+    _set_cell_margins(inp_cell, top=60, bottom=60, left=120, right=120)
+
+    # --- Recommendation ---
+    rec_hdr = doc.add_paragraph()
+    rec_hdr.paragraph_format.space_before = Pt(14)
+    rec_hdr.paragraph_format.space_after = Pt(4)
+    _add_paragraph_shading(rec_hdr, LIGHT_BLUE)
+    _add_run(rec_hdr, "  [Internal] Recommendation", size_pt=10, bold=True, color=DARK_BLUE)
+
+    rec_prompt = doc.add_paragraph()
+    rec_prompt.paragraph_format.space_before = Pt(2)
+    rec_prompt.paragraph_format.space_after = Pt(4)
+    _add_run(
+        rec_prompt,
+        "Would you recommend moving this candidate forward to the next step in the hiring process?",
+        size_pt=10,
+    )
+
+    rec_table = doc.add_table(rows=1, cols=2)
+    rec_table.alignment = WD_TABLE_ALIGNMENT.LEFT
+    rec_opt = rec_table.rows[0].cells[0]
+    rec_opt.paragraphs[0].clear()
+    _add_run(rec_opt.paragraphs[0], "Yes  /  No", size_pt=10)
+    _set_cell_no_borders(rec_opt)
+    _set_cell_margins(rec_opt, top=60, bottom=60, left=0, right=120)
+
+    rec_inp = rec_table.rows[0].cells[1]
+    rec_inp.paragraphs[0].clear()
+    rec_inp.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _add_run(rec_inp.paragraphs[0], "", size_pt=10)
+    _set_cell_borders(rec_inp, color="999999")
+    _set_cell_shading(rec_inp, "FAFAFA")
+    _set_cell_margins(rec_inp, top=60, bottom=60, left=120, right=120)
+
+    # --- Feedback and Comments ---
+    fb_hdr = doc.add_paragraph()
+    fb_hdr.paragraph_format.space_before = Pt(14)
+    fb_hdr.paragraph_format.space_after = Pt(4)
+    _add_paragraph_shading(fb_hdr, LIGHT_BLUE)
+    _add_run(fb_hdr, "  [Internal] Feedback and Comments", size_pt=10, bold=True, color=DARK_BLUE)
+
+    fb_prompt = doc.add_paragraph()
+    fb_prompt.paragraph_format.space_before = Pt(2)
+    fb_prompt.paragraph_format.space_after = Pt(4)
+    _add_run(fb_prompt, "Any additional comments or observations from the interview.", size_pt=10)
+
+    # Large notes box
+    _make_notes_box(doc, height_twips=2400)
+
+
 def _setup_header_footer(doc, metadata):
     """Configure document header and footer."""
     section = doc.sections[0]
@@ -577,7 +776,9 @@ def _setup_header_footer(doc, metadata):
 # Public API
 # ---------------------------------------------------------------------------
 
-def generate_interview_docx(metadata: dict, sections: list[dict]) -> BytesIO:
+def generate_interview_docx(
+    metadata: dict, sections: list[dict], eval_dimensions: list[dict] | None = None
+) -> BytesIO:
     """
     Generate a formatted interview document.
 
@@ -587,6 +788,8 @@ def generate_interview_docx(metadata: dict, sections: list[dict]) -> BytesIO:
         sections: list of dicts, each with keys: title, subtitle, questions
                   Each question dict has: id, question, answer, subdomain,
                   technology, difficulty, question_type
+        eval_dimensions: optional list of dicts, each with keys: label, prompt,
+                  has_rating.  Defaults to DEFAULT_EVAL_DIMENSIONS.
 
     Returns:
         BytesIO buffer containing the .docx file
@@ -611,6 +814,8 @@ def generate_interview_docx(metadata: dict, sections: list[dict]) -> BytesIO:
     _build_cover_page(doc, metadata, sections)
     _build_question_sections(doc, sections)
     _build_assessment_page(doc)
+    _build_ats_evaluation_page(doc, eval_dimensions)
+    _build_internal_only_page(doc)
 
     # Header & footer
     _setup_header_footer(doc, metadata)
