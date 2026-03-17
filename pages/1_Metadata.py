@@ -9,71 +9,62 @@ st.title("Interview Metadata")
 st.caption("Fill in candidate and interview details. Fields marked with * are required.")
 
 # ---------------------------------------------------------------------------
-# Persistent storage keys — these survive page navigation.
-# Widget keys are ephemeral; we copy TO them on load and FROM them on save.
+# Persistent storage — a single dict that is NOT widget-bound, so it
+# survives page navigation reliably.
 # ---------------------------------------------------------------------------
-_FIELDS = {
-    "meta_candidate": "",
-    "meta_date": date.today(),
-    "meta_interviewer": "",
-    "meta_job_title": "",
-    "meta_company": "Keyrus",
-    "meta_seniority": "Mid",
-    "meta_duration": "60 min",
+_DEFAULTS = {
+    "candidate": "",
+    "date": date.today(),
+    "interviewer": "",
+    "job_title": "",
+    "company": "Keyrus",
+    "seniority": "Mid",
+    "duration": "60 min",
 }
 
-# Ensure persistent keys exist
-for key, default in _FIELDS.items():
-    if key not in st.session_state:
-        st.session_state[key] = default
+if "metadata" not in st.session_state:
+    st.session_state.metadata = dict(_DEFAULTS)
+
+meta = st.session_state.metadata
 
 # ---------------------------------------------------------------------------
-# Form — groups all inputs, only writes on submit
+# Form — all inputs are batched; values captured on submit only.
+# No need to press Enter after each field.
 # ---------------------------------------------------------------------------
 with st.form("metadata_form"):
     left, right = st.columns(2)
 
     with left:
-        candidate = st.text_input(
-            "Candidate Name *", value=st.session_state.meta_candidate
-        )
-        interview_date = st.date_input(
-            "Interview Date *", value=st.session_state.meta_date
-        )
-        interviewer = st.text_input(
-            "Interviewer Name *", value=st.session_state.meta_interviewer
-        )
+        candidate = st.text_input("Candidate Name *", value=meta["candidate"])
+        interview_date = st.date_input("Interview Date *", value=meta["date"])
+        interviewer = st.text_input("Interviewer Name *", value=meta["interviewer"])
 
     with right:
-        job_title = st.text_input(
-            "Job Title / Role *", value=st.session_state.meta_job_title
-        )
-        company = st.text_input(
-            "Company / Business Unit", value=st.session_state.meta_company
-        )
+        job_title = st.text_input("Job Title / Role *", value=meta["job_title"])
+        company = st.text_input("Company / Business Unit", value=meta["company"])
         seniority_idx = (
-            SENIORITY_LEVELS.index(st.session_state.meta_seniority)
-            if st.session_state.meta_seniority in SENIORITY_LEVELS
+            SENIORITY_LEVELS.index(meta["seniority"])
+            if meta["seniority"] in SENIORITY_LEVELS
             else 1
         )
         seniority = st.selectbox(
             "Seniority Level", SENIORITY_LEVELS, index=seniority_idx
         )
-        duration = st.text_input(
-            "Estimated Duration", value=st.session_state.meta_duration
-        )
+        duration = st.text_input("Estimated Duration", value=meta["duration"])
 
     submitted = st.form_submit_button("Save & Continue", type="primary")
 
 if submitted:
-    # Persist all values to session state
-    st.session_state.meta_candidate = candidate
-    st.session_state.meta_date = interview_date
-    st.session_state.meta_interviewer = interviewer
-    st.session_state.meta_job_title = job_title
-    st.session_state.meta_company = company
-    st.session_state.meta_seniority = seniority
-    st.session_state.meta_duration = duration
+    # Persist all values into the dict (not individual keys)
+    st.session_state.metadata = {
+        "candidate": candidate,
+        "date": interview_date,
+        "interviewer": interviewer,
+        "job_title": job_title,
+        "company": company,
+        "seniority": seniority,
+        "duration": duration,
+    }
 
     # Validate required fields
     missing = []
@@ -91,13 +82,14 @@ if submitted:
         st.switch_page("pages/2_Questions.py")
 
 # ---------------------------------------------------------------------------
-# Show current status (non-form area)
+# Show current saved status
 # ---------------------------------------------------------------------------
 st.divider()
+meta = st.session_state.metadata
 required_check = {
-    "Candidate Name": st.session_state.meta_candidate,
-    "Interviewer Name": st.session_state.meta_interviewer,
-    "Job Title / Role": st.session_state.meta_job_title,
+    "Candidate Name": meta["candidate"],
+    "Interviewer Name": meta["interviewer"],
+    "Job Title / Role": meta["job_title"],
 }
 missing_now = [name for name, val in required_check.items() if not str(val).strip()]
 

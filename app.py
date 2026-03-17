@@ -24,9 +24,10 @@ st.markdown("### Current Status")
 col1, col2, col3, col4 = st.columns(4)
 
 # Metadata status
+meta = st.session_state.get("metadata", {})
 meta_ok = all(
-    st.session_state.get(k, "")
-    for k in ("meta_candidate", "meta_interviewer", "meta_job_title")
+    meta.get(k, "")
+    for k in ("candidate", "interviewer", "job_title")
 )
 with col1:
     if meta_ok:

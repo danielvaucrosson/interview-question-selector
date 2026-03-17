@@ -62,7 +62,7 @@ col2.metric("Estimated Duration", f"{estimated_duration} min")
 # ---------------------------------------------------------------------------
 # Seniority warning
 # ---------------------------------------------------------------------------
-seniority = st.session_state.get("meta_seniority", "")
+seniority = st.session_state.get("metadata", {}).get("seniority", "")
 
 if seniority and total_questions > 0:
     foundational_pct = diff_counts.get(1, 0) / total_questions
