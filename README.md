@@ -4,13 +4,25 @@ A Streamlit-based web application for filtering, selecting, and exporting interv
 
 **Live app:** [interview-question-selector.streamlit.app](https://interview-question-selector-ftivfsozkvakxgd9dl2rzk.streamlit.app/)
 
+## Workflow
+
+The app guides you through a 5-step process to build a complete interview document:
+
+1. **Metadata** — Enter candidate name, interviewer, job title, company, seniority, and interview date
+2. **Questions** — Browse the question bank with multi-dimensional filters and select questions
+3. **Sections** — Organise selected questions into titled interview sections
+4. **Review** — Preview the full interview document before export
+5. **Generate** — Validate, preview the document outline, and download a formatted `.docx` file
+
 ## Features
 
 - **Multi-dimensional filtering** — Filter by domain, sub-domain, technology, difficulty level, and question type
 - **Bulk selection** — Select all visible questions or clear selections with one click
 - **Detailed review** — Expand any question to see the full text, expected answer, and metadata
-- **Excel export** — Download selected questions as a formatted `.xlsx` file
+- **Section organisation** — Group questions into logical interview sections with titles and subtitles
+- **Document generation** — Export a professionally formatted `.docx` interview document with cover page, question sections, assessment rubrics, and evaluation forms
 - **Reset filters** — Quickly clear all filters to start a fresh search
+- **Workflow dashboard** — Landing page shows real-time completion status for each step
 
 ## Tech Stack
 
@@ -18,6 +30,7 @@ A Streamlit-based web application for filtering, selecting, and exporting interv
 - **Streamlit** — Interactive web UI
 - **pandas** — Data processing
 - **openpyxl** — Excel read/write
+- **python-docx** — Word document generation
 
 ## Getting Started
 
@@ -47,10 +60,19 @@ A `.devcontainer` configuration is included for VS Code / GitHub Codespaces. Ope
 ## Project Structure
 
 ```
-├── app.py                 # Main Streamlit application
-├── question-bank.xlsx     # Interview question data source
-├── requirements.txt       # Python dependencies
-└── .devcontainer/         # Dev container configuration
+├── app.py                     # Main Streamlit application (landing page & status dashboard)
+├── pages/
+│   ├── 1_Metadata.py          # Step 1: Candidate & interview metadata
+│   ├── 2_Questions.py         # Step 2: Question browsing & selection
+│   ├── 3_Sections.py          # Step 3: Section organisation
+│   ├── 4_Review.py            # Step 4: Document preview
+│   └── 5_Generate.py          # Step 5: Validation, generation & download
+├── lib/
+│   ├── data.py                # Question bank loader & shared constants
+│   └── docx_engine.py         # Word document generation engine
+├── question-bank.xlsx         # Interview question data source
+├── requirements.txt           # Python dependencies
+└── .devcontainer/             # Dev container configuration
 ```
 
 ## Project Management
